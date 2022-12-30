@@ -18,9 +18,16 @@ import java.util.Set;
 
 public class MessageListener extends ListenerAdapter {
 
-    private final String fixedPrefix = "&event";
-    private final String[] announceChName = {
-            "공지"
+    private final String fixedPrefix = "&버블리";
+    private final String[] announceChId = {
+            "996128946003382272",
+            "1035137415813271552",
+            "1056188382855823420",
+
+            //여기는 테스트용
+            "1058386803557675108",
+            "1058386880061788291",
+            "1058386962077200405"
     };
     private Logger logger = LoggerFactory.getLogger(MessageListener.class);
 
@@ -34,11 +41,10 @@ public class MessageListener extends ListenerAdapter {
      */
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-
         MessageChannel messageChannel = event.getChannel();
-        String chName = messageChannel.getName();
+        String chId = messageChannel.getId();
 
-        if(!isAnnounceCh(chName)){
+        if(!isAnnounceCh(chId)){
             return;
         }
 
@@ -54,12 +60,12 @@ public class MessageListener extends ListenerAdapter {
 
     /**
      * 공지 채널인지 아닌지 판단함
-     * @param chName
+     * @param chId
      * @return 공지 채널일때 true
      */
-    public boolean isAnnounceCh(String chName){
-        for(String ch: announceChName){
-            if(ch.equals(chName))
+    public boolean isAnnounceCh(String chId){
+        for(String ch: announceChId){
+            if(ch.equals(chId))
                 return true;
         }
         return false;
@@ -72,10 +78,10 @@ public class MessageListener extends ListenerAdapter {
      */
     public boolean isCheckEmojiMessage(String rawMessage){
         try{
-            if(rawMessage.length() < 6){
+            if(rawMessage.length() < 4){
                 return false;
             }else {
-                String prefix = rawMessage.substring(0, 6);
+                String prefix = rawMessage.substring(0, 4);
                 if (prefix.equals(fixedPrefix)) {
                     logger.info("이모지 이벤트 체크해야하는 메세지");
                     return true;
@@ -121,8 +127,8 @@ public class MessageListener extends ListenerAdapter {
      */
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-        String nowChName = event.getChannel().getName();
-        if(!isAnnounceCh(nowChName)){
+        String nowChId = event.getChannel().getId();
+        if(!isAnnounceCh(nowChId)){
             return;
         }
 
@@ -166,6 +172,7 @@ public class MessageListener extends ListenerAdapter {
 
         String userId = event.getMember().getId();
         deleteClickInfo(messageId, userId);
+
     }
 
     /**
@@ -215,7 +222,7 @@ public class MessageListener extends ListenerAdapter {
      * @return 이벤트 해당하는 이모지일 경우 true
      */
     private boolean checkEmoji(String emoji){
-        if(emoji.equals("\uD83D\uDE02")){
+        if(emoji.equals("\uD83C\uDF89")){
             logger.info("이벤트 이모지에 해당함");
             return true;
         }else {
