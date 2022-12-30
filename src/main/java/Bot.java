@@ -7,7 +7,7 @@ import prop.SecretProp;
 import javax.security.auth.login.LoginException;
 import java.util.Set;
 
-public class Main {
+public class Bot {
 
     /*
         java discord api로 토큰을 이용한 연결만 맺고, 나머지는 MessageListener에서 처리함
@@ -15,7 +15,7 @@ public class Main {
 
     private static String token;
     private static JDA jda = null;
-    private static Logger logger = LoggerFactory.getLogger(Main.class);
+    private static Logger logger = LoggerFactory.getLogger(Bot.class);
     private static MessageListener messageListener;
     private static MessageIdLoader messageIdLoader;
 

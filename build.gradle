@@ -13,6 +13,12 @@ repositories {
     }
 }
 
+jar{
+    enabled=false
+    manifest {
+        attributes 'Main-Class': 'org.dus.Bot'
+    }
+}
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'

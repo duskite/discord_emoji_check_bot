@@ -1,6 +1,6 @@
 package http;
 
-import DTO.UserClickInfo;
+import dto.UserClickInfo;
 import retrofit2.Call;
 import retrofit2.http.*;
 

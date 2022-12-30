@@ -1,4 +1,4 @@
-import DTO.UserClickInfo;
+import dto.UserClickInfo;
 import http.RetrofitUtil;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageReaction;
