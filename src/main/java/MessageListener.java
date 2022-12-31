@@ -160,8 +160,8 @@ public class MessageListener extends ListenerAdapter {
      */
     @Override
     public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
-        String nowChName = event.getChannel().getName();
-        if(!isAnnounceCh(nowChName)){
+        String nowChId = event.getChannel().getId();
+        if(!isAnnounceCh(nowChId)){
             return;
         }
 
@@ -170,9 +170,12 @@ public class MessageListener extends ListenerAdapter {
             return;
         }
 
-        String userId = event.getMember().getId();
-        deleteClickInfo(messageId, userId);
-
+        try{
+            String userId = event.getMember().getId();
+            deleteClickInfo(messageId, userId);
+        }catch (NullPointerException e){
+            logger.info("유저가 이모지 취소했는데 읽어온 ID가 null 임");
+        }
     }
 
     /**
