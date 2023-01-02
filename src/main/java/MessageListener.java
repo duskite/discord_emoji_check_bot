@@ -153,10 +153,11 @@ public class MessageListener extends ListenerAdapter {
         userClickInfo.setUserTag(userTag);
         userClickInfo.setMessageId(messageId);
 
+//        포인트 자동적립은 우선 주석 처리. 안됨
         // 취합과 동시에 포인트 적립도 가능하도록 함
         // 이벤트가 있어야 텍스트 채널을 읽을 수 있는 거 같음
         // 어짜피 계속 같은 텍스트 채널이라 final로 고정하면 좋을듯
-        pointCh = event.getGuild().getTextChannelById(POINT_CH_ID);
+//        pointCh = event.getGuild().getTextChannelById(POINT_CH_ID);
         sendClickInfoToServer(userClickInfo);
     }
 
@@ -231,6 +232,7 @@ public class MessageListener extends ListenerAdapter {
         });
     }
 
+//    여기는 안돼서 우선 주석 처리함
     /**
      * 버블리 봇에 포인트 적립 요청
      * @param userClickInfo
