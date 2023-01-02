@@ -218,7 +218,7 @@ public class MessageListener extends ListenerAdapter {
                     if(Boolean.TRUE.equals(response.body())){
                         logger.info("유저 이모지 클릭 정보 전송 성공");
 
-                        requestIncreasePoint(userClickInfo);
+//                        requestIncreasePoint(userClickInfo);
                     }else {
                         logger.info("동일한 게시글에 중복된 이모지 클릭임");
                     }
