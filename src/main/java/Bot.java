@@ -42,6 +42,7 @@ public class Bot {
             messageIdLoader.getMessageIdSet();
             jda.addEventListener(messageListener);
 
+
         }catch (LoginException e){
             logger.info("로그인 오류(토큰 관련)");
         }

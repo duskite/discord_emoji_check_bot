@@ -21,7 +21,7 @@ public class SecretProp extends Properties {
     public static SecretProp getInstance() {
         if(secretProp == null){
             secretProp = new SecretProp();
-            secretProp.initProp();
+//            secretProp.initProp();
         }
         return secretProp;
     }

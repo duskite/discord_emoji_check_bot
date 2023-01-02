@@ -2,6 +2,8 @@ import dto.UserClickInfo;
 import http.RetrofitUtil;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
@@ -18,17 +20,16 @@ import java.util.Set;
 
 public class MessageListener extends ListenerAdapter {
 
-    private final String fixedPrefix = "&버블리";
+    private final String fixedPrefix = "&Bubbly";
     private final String[] announceChId = {
             "996128946003382272",
             "1035137415813271552",
             "1056188382855823420",
-
-            //여기는 테스트용
-            "1058386803557675108",
-            "1058386880061788291",
-            "1058386962077200405"
     };
+
+    private final String POINT_CH_ID = "1056761637211738112";
+    private TextChannel pointCh;
+
     private Logger logger = LoggerFactory.getLogger(MessageListener.class);
 
     private Set<String> chkMessageIdSet = new HashSet<>();
@@ -78,10 +79,10 @@ public class MessageListener extends ListenerAdapter {
      */
     public boolean isCheckEmojiMessage(String rawMessage){
         try{
-            if(rawMessage.length() < 4){
+            if(rawMessage.length() < 7){
                 return false;
             }else {
-                String prefix = rawMessage.substring(0, 4);
+                String prefix = rawMessage.substring(0, 7);
                 if (prefix.equals(fixedPrefix)) {
                     logger.info("이모지 이벤트 체크해야하는 메세지");
                     return true;
@@ -137,11 +138,12 @@ public class MessageListener extends ListenerAdapter {
             return;
         }
 
-        MessageReaction.ReactionEmote reactionEmote = event.getReactionEmote();
-        String emoji = reactionEmote.getEmoji();
-        if(!checkEmoji(emoji)){
-            return;
-        }
+        //요구사항 변경으로 주석 처리, 이모지 종류와 상관없이 클릭 읽고서 중복은 서버에서 판단
+//        MessageReaction.ReactionEmote reactionEmote = event.getReactionEmote();
+//        String emoji = reactionEmote.getEmoji();
+//        if(!checkEmoji(emoji)){
+//            return;
+//        }
 
         String userId = event.getMember().getId();
         String userTag = event.getUser().getAsTag();
@@ -151,6 +153,10 @@ public class MessageListener extends ListenerAdapter {
         userClickInfo.setUserTag(userTag);
         userClickInfo.setMessageId(messageId);
 
+        // 취합과 동시에 포인트 적립도 가능하도록 함
+        // 이벤트가 있어야 텍스트 채널을 읽을 수 있는 거 같음
+        // 어짜피 계속 같은 텍스트 채널이라 final로 고정하면 좋을듯
+        pointCh = event.getGuild().getTextChannelById(POINT_CH_ID);
         sendClickInfoToServer(userClickInfo);
     }
 
@@ -204,20 +210,38 @@ public class MessageListener extends ListenerAdapter {
      * @param userClickInfo
      */
     private void sendClickInfoToServer(UserClickInfo userClickInfo){
-        retrofitUtil.getRetrofitAPI().sendUserClickInfo(userClickInfo).enqueue(new Callback<Void>() {
+        retrofitUtil.getRetrofitAPI().sendUserClickInfo(userClickInfo).enqueue(new Callback<Boolean>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                 if(response.isSuccessful()){
-                    logger.info("유저 이모지 클릭 정보 전송 성공");
+                    if(Boolean.TRUE.equals(response.body())){
+                        logger.info("유저 이모지 클릭 정보 전송 성공");
+
+                        requestIncreasePoint(userClickInfo);
+                    }else {
+                        logger.info("동일한 게시글에 중복된 이모지 클릭임");
+                    }
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<Boolean> call, Throwable t) {
                 logger.info("유저 이모지 클릭 정보 전송 실패!!!");
             }
         });
     }
+
+    /**
+     * 버블리 봇에 포인트 적립 요청
+     * @param userClickInfo
+     */
+    private void requestIncreasePoint(UserClickInfo userClickInfo){
+        String userTag = userClickInfo.getUserTag();
+        String query = "/give-coins member:@" + userTag + " amount:1";
+
+        pointCh.sendMessage(query).queue();
+    }
+
 
     /**
      * 이벤트 이모지인지 판단

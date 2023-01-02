@@ -18,8 +18,9 @@ public interface RetrofitAPI {
     Call<Void> sendMessageId(@Field("messageId") String messageId);
 
     // 유저가 이모지 누른 내용 서버로 전송
+    // 동일한 게시글에 대해 중복이 아닐경우 저장되고 true 리턴
     @POST("/api/message/userClickInfo")
-    Call<Void> sendUserClickInfo(@Body UserClickInfo userClickInfo);
+    Call<Boolean> sendUserClickInfo(@Body UserClickInfo userClickInfo);
 
     // 유저가 이모지 취소했을 경우 서버에서 삭제
     @DELETE("/api/message/deleteUserClick/{messageId}/{userId}")
